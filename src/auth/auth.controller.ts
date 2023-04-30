@@ -11,7 +11,12 @@ export class AuthController {
     @Get('user')
     async getUserDetails(@AuthToken() token: string): Promise<Partial<User>> {
         return this.authService.getUserDetails(token);
-      }
+    }
+
+    @Post('logout')
+    async logout(@AuthToken() token: string) {
+        return this.authService.logout(token);
+    }
       
       
 

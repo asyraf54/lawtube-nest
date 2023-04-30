@@ -45,8 +45,17 @@ export class AuthService {
     return { status: `Berhasil Membuat akun dengan username ${user.username}`};
   }
 
-  async getUserDetails(token: string): Promise<Partial<User>> {
+  async getUserDetails(token: string){
     const decodedToken = await this.jwtService.verifyAsync(token);
+    const isTokenBlacklisted = await this.prisma.tokenBlacklist.findUnique({
+      where: {
+        token: token,
+      },
+    });
+
+    if (isTokenBlacklisted) {
+      return {status: "Token tidak valid"};
+    }
     const user = await this.prisma.user.findUnique({
       where: {
         id: decodedToken.id,
@@ -62,6 +71,14 @@ export class AuthService {
     } else {
       throw new Error('User not found');
     }
+  }
+  async logout (token: string){
+    await this.prisma.tokenBlacklist.create({
+      data: {
+        token: token,
+      },
+    });
+    return { status: "Berhasil Logout"};
   }
   
 }

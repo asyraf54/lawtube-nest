@@ -16,3 +16,8 @@ model User {
   password    String
   email       String        @unique
 }
+
+model TokenBlacklist {
+  id          String        @id @default(uuid())
+  token       String        @unique
+}
